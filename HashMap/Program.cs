@@ -6,7 +6,9 @@ namespace HashMap
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            IDictionary<int, int> fun = default;
+
+            IEnumerable<KeyValuePair<int, int>> b = fun;
         }
     }
 }

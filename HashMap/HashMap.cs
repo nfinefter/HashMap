@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 
 namespace HashMap
 {
-    public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, Implicit
+    public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
     {
 
 
-        public TValue this[TKey key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public string Id { get; }
+        public TValue this[TKey key] { get => ; set => ; }
 
         public ICollection<TKey> Keys => throw new NotImplementedException();
 
@@ -25,7 +23,7 @@ namespace HashMap
 
         public bool IsReadOnly => throw new NotImplementedException();
 
-        int Implicit.Age { get; }
+        
 
         public void Add(TKey key, TValue value)
         {
@@ -34,7 +32,7 @@ namespace HashMap
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+
         }
 
         public void Clear()
