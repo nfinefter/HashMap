@@ -11,10 +11,19 @@ namespace HashMap
 {
     public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
     {
+        public LinkedList<KeyValuePair<TKey, TValue>>[] items;
 
+        public TValue this[TKey key]
+        {
+            get
+            {
 
-        public TValue this[TKey key] { get => ; set => ; }
+            }
+            set
+            {
 
+            }
+        }
         public ICollection<TKey> Keys => throw new NotImplementedException();
 
         public ICollection<TValue> Values => throw new NotImplementedException();
@@ -27,7 +36,14 @@ namespace HashMap
 
         public void Add(TKey key, TValue value)
         {
-            throw new NotImplementedException();
+            var index = (key.GetHashCode()) % items.Length;
+
+            if (items[index] == null)
+            {
+                LinkedList<KeyValuePair<TKey, TValue>> keyValuePairs = new LinkedList<KeyValuePair<TKey, TValue>>();
+                keyValuePairs.AddLast();
+                //Add the KeyValuePair
+            }
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
