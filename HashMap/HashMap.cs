@@ -82,12 +82,16 @@ namespace HashMap
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            if (GetNode(item) == null) return false;
+
+            return true;
         }
 
         public bool ContainsKey(TKey key)
         {
-            throw new NotImplementedException();
+            if (GetNode(key) == null) return false;
+
+            return true;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
