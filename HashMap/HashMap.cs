@@ -11,19 +11,19 @@ using System.Threading.Tasks;
 namespace HashMap
 {
     public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
-    { 
+    {
         public LinkedList<KeyValuePair<TKey, TValue>>[] items;
 
 #nullable disable
         public TValue this[TKey key]
         {
             get
-            { 
+            {
                 LinkedListNode<KeyValuePair<TKey, TValue>> node = GetNode(key);
 
                 if (node == null) throw new KeyNotFoundException();
-                       
-                return node.Value.Value;                
+
+                return node.Value.Value;
             }
             set
             {
@@ -32,19 +32,83 @@ namespace HashMap
 
                 if (node == null) throw new KeyNotFoundException();
 
-                node.Value = KeyValuePair.Create(key, node.Value.Value); 
+                node.Value = KeyValuePair.Create(key, node.Value.Value);
+            }
+        }
+
+        public ICollection<TKey> Keys
+        {
+            get
+            {
+                ICollection<TKey> keys = null;
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (items[i] != null)
+                    {
+                        foreach (var item in items[i])
+                        {
+                            keys.Add(item.Key);
+                        }
+                    }
+                }
+                return keys;
+            }
+            
+        }
+
+        public ICollection<TValue> Values
+        {
+            get
+            {
+                ICollection<TValue> values = null;
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (items[i] != null)
+                    {
+                        foreach (var item in items[i])
+                        {
+                            values.Add(item.Value);
+                        }
+                    }
+                }
+                return values;
             }
         }
 #nullable enable
-        public ICollection<TKey> Keys => throw new NotImplementedException();
-
-        public ICollection<TValue> Values => throw new NotImplementedException();
-
-        public int Count => throw new NotImplementedException();
+        public int Count { get; private set; }
 
         public bool IsReadOnly => throw new NotImplementedException();
 
+        private IEqualityComparer<TKey> equalityComparer;
 
+        public HashMap(int count, IEqualityComparer<TKey> equalityComparer)
+        {
+            this.equalityComparer = equalityComparer;
+            Count = count;
+        }
+
+        public LinkedList<KeyValuePair<TKey, TValue>>[] ReHash()
+        {
+            LinkedList<KeyValuePair<TKey, TValue>>[] newItems = new LinkedList<KeyValuePair<TKey, TValue>>[items.Length * 2];
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i] != null)
+                {
+                    foreach (var item in items[i])
+                    {
+                        var index = (item.GetHashCode() % newItems.Length);
+
+                        if (newItems[index] == null)
+                        {
+                            newItems[index] = new LinkedList<KeyValuePair<TKey, TValue>>();
+                        }
+
+                        newItems[index].AddLast(item);
+                    }
+                }
+            }
+            return newItems;
+        }
 
         public void Add(TKey key, TValue value)
         {
@@ -60,6 +124,11 @@ namespace HashMap
                 items[index] = new LinkedList<KeyValuePair<TKey, TValue>>();
 
                 items[index].AddLast(item);
+                Count++;
+                if (items.Length >= Count)
+                {
+                    items = ReHash();
+                }
             }
             else
             {
@@ -69,7 +138,6 @@ namespace HashMap
                 {
                     throw new Exception("Duplicate key");
                 }
-
 
                 items[index].AddLast(item);
             }
@@ -137,7 +205,6 @@ namespace HashMap
 
         public LinkedListNode<KeyValuePair<TKey, TValue>> GetNode(TKey key)
         {
-
             var index = (key.GetHashCode()) % items.Length;
 
             if (items[index] == null) return null;
@@ -146,13 +213,10 @@ namespace HashMap
             {
                 if (key.Equals(temp.Value.Key)) return temp;
             }
-            
             return null;
-
         }
         public LinkedListNode<KeyValuePair<TKey, TValue>> GetNode(KeyValuePair<TKey, TValue> item)
         {
-
             var index = (item.Key.GetHashCode()) % items.Length;
 
             if (items[index] == null) return null;
@@ -162,10 +226,8 @@ namespace HashMap
                 if (item.Key.Equals(temp.Value.Key)) return temp;
             }
             return null;
-
-
         }
 
-
+     
     }
 }
