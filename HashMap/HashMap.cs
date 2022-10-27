@@ -53,7 +53,7 @@ namespace HashMap
                 }
                 return keys;
             }
-            
+
         }
 
         public ICollection<TValue> Values
@@ -83,6 +83,7 @@ namespace HashMap
 
         public HashMap(int count, IEqualityComparer<TKey> equalityComparer)
         {
+            items = new LinkedList<KeyValuePair<TKey, TValue>>[count];
             this.equalityComparer = equalityComparer;
             Count = count;
         }
@@ -117,7 +118,7 @@ namespace HashMap
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            var index = (item.Key.GetHashCode()) % items.Length;
+            var index = (Math.Abs(item.Key.GetHashCode())) % items.Length;
 
             if (items[index] == null)
             {
@@ -134,7 +135,7 @@ namespace HashMap
             {
                 LinkedListNode<KeyValuePair<TKey, TValue>> node = GetNode(item.Key);
 
-                if (item.Key.Equals(node.Value.Key))
+                if (node != null && item.Key.Equals(node.Value.Key))
                 {
                     throw new Exception("Duplicate key");
                 }
@@ -162,14 +163,37 @@ namespace HashMap
             return true;
         }
 
+        //looping through the pairs in this, copy at array[arrayIndex] each pair and increment index
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            int count = arrayIndex;
+
+            if (count + Count > items.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            foreach (var item in this)
+            {
+               
+                array[count] = item;
+                count++;
+            }
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            throw new NotImplementedException();
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i] == null) continue;
+
+                foreach (var item in items[i])
+                {
+                    yield return item;
+                }
+            }
+
         }
 
         public bool Remove(TKey key)
@@ -200,12 +224,12 @@ namespace HashMap
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return GetEnumerator();
         }
 
         public LinkedListNode<KeyValuePair<TKey, TValue>> GetNode(TKey key)
         {
-            var index = (key.GetHashCode()) % items.Length;
+            var index = (Math.Abs(key.GetHashCode()) % items.Length);
 
             if (items[index] == null) return null;
 
@@ -217,7 +241,7 @@ namespace HashMap
         }
         public LinkedListNode<KeyValuePair<TKey, TValue>> GetNode(KeyValuePair<TKey, TValue> item)
         {
-            var index = (item.Key.GetHashCode()) % items.Length;
+            var index = (Math.Abs(item.Key.GetHashCode())) % items.Length;
 
             if (items[index] == null) return null;
 
@@ -228,6 +252,6 @@ namespace HashMap
             return null;
         }
 
-     
+
     }
 }
