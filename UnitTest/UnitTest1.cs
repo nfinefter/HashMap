@@ -49,7 +49,8 @@ namespace UnitTest
         public void CopyTo(string[] strings, int[] ints, int arrayIndex)
         {
             //make array
-            hashMap.CopyTo(KeyValuePair.Create(strings[0], ints[0]), arrayIndex);
+            KeyValuePair<string, int>[] array = new KeyValuePair<string, int>(5);
+            hashMap.CopyTo(array, arrayIndex);
         }
 
     }
