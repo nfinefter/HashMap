@@ -22,7 +22,7 @@ namespace HashMap
     {
         static void Main(string[] args)
         {
-            HashMap<string, int> items = new HashMap<string, int>(5, new StringEqualityComparer());
+            HashMap<string, int> items = new HashMap<string, int>(0, new StringEqualityComparer());
 
             KeyValuePair<string, int> object1 = new KeyValuePair<string, int>("a", 47);
             KeyValuePair<string, int> object2 = new KeyValuePair<string, int>("fasdf", 47);
@@ -46,7 +46,7 @@ namespace HashMap
 
             KeyValuePair<string, int>[] array = new KeyValuePair<string, int>[10];
 
-            items.CopyTo(array, 5);
+            items.CopyTo(array, 1);
 
         }
     }

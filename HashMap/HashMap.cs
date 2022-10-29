@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -77,15 +78,34 @@ namespace HashMap
 #nullable enable
         public int Count { get; private set; }
 
-        public bool IsReadOnly => throw new NotImplementedException();
+        private bool isReadOnly = false;
+
+        public bool IsReadOnly => isReadOnly;
 
         private IEqualityComparer<TKey> equalityComparer;
 
-        public HashMap(int count, IEqualityComparer<TKey> equalityComparer)
+        public HashMap(List<KeyValuePair<TKey, TValue>> collection, bool isReadOnly, int size, IEqualityComparer<TKey> equalityComparer)
         {
-            items = new LinkedList<KeyValuePair<TKey, TValue>>[count];
+            if (size == 0) size = 10;
+
+            items = new LinkedList<KeyValuePair<TKey, TValue>>[size];
+            Count = 0;
             this.equalityComparer = equalityComparer;
-            Count = count;
+            for (int i = 0; i < collection.Count; i++)
+            {
+                Add(collection[i].Key, collection[i].Value);
+            }
+            this.isReadOnly = isReadOnly;
+            
+        }
+
+        public HashMap(int size, IEqualityComparer<TKey> equalityComparer)
+        {
+            if (size == 0) size = 10;
+
+            items = new LinkedList<KeyValuePair<TKey, TValue>>[size];
+            this.equalityComparer = equalityComparer;
+            Count = 0;
         }
 
         public LinkedList<KeyValuePair<TKey, TValue>>[] ReHash()
@@ -97,7 +117,7 @@ namespace HashMap
                 {
                     foreach (var item in items[i])
                     {
-                        var index = (item.GetHashCode() % newItems.Length);
+                        var index = (Math.Abs(item.GetHashCode()) % newItems.Length);
 
                         if (newItems[index] == null)
                         {
@@ -118,6 +138,8 @@ namespace HashMap
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
+            if (IsReadOnly == true) return;
+
             var index = (Math.Abs(item.Key.GetHashCode())) % items.Length;
 
             if (items[index] == null)
@@ -126,7 +148,7 @@ namespace HashMap
 
                 items[index].AddLast(item);
                 Count++;
-                if (items.Length >= Count)
+                if (Count >= items.Length)
                 {
                     items = ReHash();
                 }
@@ -198,28 +220,40 @@ namespace HashMap
 
         public bool Remove(TKey key)
         {
+            if (IsReadOnly == true) return false;
             LinkedListNode<KeyValuePair<TKey, TValue>> node = GetNode(key);
 
             if (node == null) return false;
 
             node.List.Remove(node);
+            Count--;
             return true;
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-
+            if (IsReadOnly == true) return false;
             LinkedListNode<KeyValuePair<TKey, TValue>> node = GetNode(item.Key);
 
             if (node == null) return false;
 
             node.List.Remove(node);
+            Count--;
             return true;
         }
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            throw new NotImplementedException();
+            //given the key, if the key exists with a value set value to the value and return true other return false
+
+            value = default;
+
+            var item = GetNode(key);
+
+            if (item == null) return false;
+
+            value = item.Value.Value;
+            return true;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
