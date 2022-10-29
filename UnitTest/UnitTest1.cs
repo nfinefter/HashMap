@@ -33,6 +33,14 @@ namespace UnitTest
         }
 
         [Theory]
+        [InlineData("a")]
+        public void RemoveKey(string key)
+        {
+            hashMap.Remove(key);
+        }
+
+
+        [Theory]
         [InlineData("a", 47)]
         public void Contains(string key, int value)
         {
@@ -45,12 +53,19 @@ namespace UnitTest
             ("a", 27)
         };*/
         [Theory]
-        [InlineData(new[] { "a" }, new[] { 5 }, 0)]
-        public void CopyTo(string[] strings, int[] ints, int arrayIndex)
+        [InlineData(0)]
+        public void CopyTo(int arrayIndex)
         {
             //make array
-            KeyValuePair<string, int>[] array = new KeyValuePair<string, int>(5);
+            KeyValuePair<string, int>[] array = new KeyValuePair<string, int>[5];
             hashMap.CopyTo(array, arrayIndex);
+        }
+
+        [Theory]
+        [InlineData("a")]
+        public void ContainsKey(string key)
+        {
+            hashMap.ContainsKey(key);
         }
 
     }
